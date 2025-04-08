@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz de Clubes de Futebol</title>
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #dff5e1; 
+      padding: 30px;
+    }
+    #quiz-container {
+      background: #b7e4c7; 
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    img {
+      width: 150px;
+      margin-bottom: 20px;
+    }
+    .option {
+      display: block;
+      background: #e2f7ea; 
+      padding: 10px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .option:hover {
+      background: #cdeed9; 
+    }
+    #score {
+      font-size: 1.2em;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .restart-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #38b000; 
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .restart-btn:hover {
+      background-color: #2a7a00; 
+    }
+    #feedback {
+      font-size: 1.1em;
+      margin-top: 10px;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    .acerto {
+      color: green;
+    }
+    .erro {
+      color: red;
+    }
+    #progress {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="quiz-container">
+    <h2>Que clube é esse?</h2>
+    <img id="club-logo" src="" alt="Escudo do clube">
+    <div id="options"></div>
+    <div id="feedback"></div>
+    <div id="score">Pontua  o: 0</div>
+    <div id="progress"></div>
+    <div id="final-message"></div>
+    <button class="restart-btn" onclick="startQuiz()">Jogar Novamente</button>
+  </div>
+
+  <script>
+    const clubes = [
+      { nome: "Atlético-MG", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Atletico_mineiro_galo.png/250px-Atletico_mineiro_galo.png" },
+      { nome: "Bahia", imagem: "https://upload.wikimedia.org/wikipedia/pt/thumb/9/90/ECBahia.png/150px-ECBahia.png" },
+      { nome: "Botafogo", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg/1200px-Botafogo_de_Futebol_e_Regatas_logo.svg.png" },
+      { nome: "Bragantino", imagem: "https://upload.wikimedia.org/wikipedia/pt/9/9e/RedBullBragantino.png" },
+      { nome: "Ceará ", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cear%C3%A1_Sporting_Club_logo.svg/1200px-Cear%C3%A1_Sporting_Club_logo.svg.png" },
+      { nome: "Corinthians", imagem: "https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Sport_Club_Corinthians_Paulista_crest.svg/1200px-Sport_Club_Corinthians_Paulista_crest.svg.png" },
+      { nome: "Cruzeiro", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg/250px-Cruzeiro_Esporte_Clube_%28logo%29.svg.png" },
+      { nome: "Flamengo", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_logo.svg/250px-Flamengo_braz_logo.svg.png" },
+      { nome: "Fluminense", imagem: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Fluminense_FC_escudo.png" },
+      { nome: "Fortaleza", imagem: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Fortaleza_EC_2018.png" },
+      { nome: "Grêmio", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Gremio_logo.svg/250px-Gremio_logo.svg.png" },
+      { nome: "Internacional", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/SC_Internacional_Brazil_Logo.svg/250px-SC_Internacional_Brazil_Logo.svg.png" },
+      { nome: "Juventude", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/EC_Juventude.svg/1200px-EC_Juventude.svg.png" },
+      { nome: "Mirassol", imagem: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Mirassol_FC_logo.png" },
+      { nome: "Palmeiras", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/250px-Palmeiras_logo.svg.png" },
+      { nome: "Santos", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Santos_Logo.png/800px-Santos_Logo.png" },
+      { nome: "São Paulo", imagem: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Sao_paulo_fc_starslogo.png" },
+      { nome: "Sport", imagem: "https://upload.wikimedia.org/wikipedia/en/thumb/4/45/Sport_Club_Recife.svg/1200px-Sport_Club_Recife.svg.png" },
+      { nome: "Vasco", imagem: "https://upload.wikimedia.org/wikipedia/pt/a/ac/CRVascodaGama.png" },
+      { nome: "Vitória", imagem: "https://upload.wikimedia.org/wikipedia/pt/thumb/3/34/Esporte_Clube_Vit%C3%B3ria_logo.png/120px-Esporte_Clube_Vit%C3%B3ria_logo.png" },
+
+      // Série B clubes adicionados
+      { nome: "Athletico Paranaense", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Athletico_Paranaense_%28Logo_2019%29.svg/150px-Athletico_Paranaense_%28Logo_2019%29.svg.png" },
+      { nome: "Atlético Goianiense", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Atl%C3%A9tico_Goianiense.svg/1200px-Atl%C3%A9tico_Goianiense.svg.png" },
+      { nome: "Criciúma", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/EscudoCriciumaEC.svg/1200px-EscudoCriciumaEC.svg.png" },
+      { nome: "Cuiabá", imagem: "https://upload.wikimedia.org/wikipedia/pt/2/20/Cuiab%C3%A1EC2020.png" },
+      { nome: "América Mineiro", imagem: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Escudo_Am%C3%A9rica_de_Minas.png" },
+      { nome: "Avaí", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Avai_FC_%2805-E%29_-_SC.svg/800px-Avai_FC_%2805-E%29_-_SC.svg.png" },
+      { nome: "Botafogo-SP", imagem: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Botafogo_Futebol_Clube_%28Ribeir%C3%A3o_Preto%29_logo_%282021%29.png" },
+      { nome: "Chapecoense", imagem: "https://upload.wikimedia.org/wikipedia/pt/e/e4/Novo_escudo_da_Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol.png" },
+      { nome: "Coritiba", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Coritiba_FBC_%282011%29_-_PR.svg/150px-Coritiba_FBC_%282011%29_-_PR.svg.png" },
+      { nome: "CRB", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/CRB_logo.svg/1200px-CRB_logo.svg.png" },
+      { nome: "Goiás", imagem: "https://static.wikia.nocookie.net/prosportsteams/images/6/68/GON.png/revision/latest?cb=20210228152901" },
+      { nome: "Novorizontino", imagem: "https://upload.wikimedia.org/wikipedia/pt/5/5f/Gr%C3%AAmioNovorizontino.png" },
+      { nome: "Operário-PR", imagem: "https://upload.wikimedia.org/wikipedia/pt/1/16/Oper%C3%A1rioFerrovi%C3%A1rioEC%282018%29.png" },
+      { nome: "Paysandu", imagem: "https://upload.wikimedia.org/wikipedia/pt/2/2f/PaysanduSC.png" },
+      { nome: "Vila Nova", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Vila_Nova_Logo_Oficial.svg/1200px-Vila_Nova_Logo_Oficial.svg.png" },
+      { nome: "Athletic Club", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Athletic_Club_%28Minas_Gerais%29.svg/1200px-Athletic_Club_%28Minas_Gerais%29.svg.png" },
+      { nome: "Ferroviária", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Escudo_Associa%C3%A7%C3%A3o_Ferrovi%C3%A1ria_de_Esportes.png/1200px-Escudo_Associa%C3%A7%C3%A3o_Ferrovi%C3%A1ria_de_Esportes.png" },
+      { nome: "Remo", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Clube_do_Remo.svg/250px-Clube_do_Remo.svg.png" },
+      { nome: "Volta Redonda", imagem: "https://upload.wikimedia.org/wikipedia/pt/b/ba/Volta%C3%A7oFC.png" },
+      { nome: "Amazonas", imagem: "https://upload.wikimedia.org/wikipedia/pt/7/74/AmazonasFC.png" },
+
+     // Série C clubes adicionados
+    { nome: "ABC", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/ABC_FC_%28E%29_-_RN.svg/1200px-ABC_FC_%28E%29_-_RN.svg.png" },
+    { nome: "Anápolis", imagem: "https://upload.wikimedia.org/wikipedia/pt/8/85/An%C3%A1polis-GO_%28BRA%29.png" },
+    { nome: "Botafogo-PB", imagem: "https://upload.wikimedia.org/wikipedia/commons/b/b8/BotafogoPB_logo.png" },
+    { nome: "Brusque", imagem: "https://upload.wikimedia.org/wikipedia/commons/a/ae/BFC_Escudo_Novo-1920w.png" },
+    { nome: "Caxias", imagem: "https://upload.wikimedia.org/wikipedia/pt/thumb/0/0f/SER_Caxias_do_Sul.svg/1200px-SER_Caxias_do_Sul.svg.png" },
+    { nome: "Confiança", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/AD_Confianca36.png/640px-AD_Confianca36.png" },
+    { nome: "CSA", imagem: "https://upload.wikimedia.org/wikipedia/pt/b/b2/CSAal.png" },
+    { nome: "Ferroviário", imagem: "https://upload.wikimedia.org/wikipedia/commons/2/20/Escudo_do_Ferrovi%C3%A1rio_Atl%C3%A9tico_Clube.png" },
+    { nome: "Figueirense", imagem: "https://upload.wikimedia.org/wikipedia/pt/7/7b/Figueirense.png" },
+    { nome: "Floresta", imagem: "https://upload.wikimedia.org/wikipedia/pt/8/86/Floresta_Esporte_Clube.png" },
+    { nome: "Guarani", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Guarani_FC_%28E%29_-_SP.svg/1200px-Guarani_FC_%28E%29_-_SP.svg.png" },
+    { nome: "Londrina", imagem: "https://upload.wikimedia.org/wikipedia/pt/8/83/LondrinaEC.png" },
+    { nome: "Náutico", imagem: "https://upload.wikimedia.org/wikipedia/pt/d/de/Simbolo-escudo-nautico.png" },
+    { nome: "Sampaio Corrêa", imagem: "https://upload.wikimedia.org/wikipedia/commons/8/86/Sampaio_Corr%C3%AAa_FC.png" },
+    { nome: "São Bernardo", imagem: "https://upload.wikimedia.org/wikipedia/pt/e/e7/S%C3%A3o_Bernardo_Futebol_Clube_Logo.PNG" },
+    { nome: "Tombense", imagem: "https://upload.wikimedia.org/wikipedia/pt/8/85/TombenseFC.png" },
+    { nome: "Ypiranga-RS", imagem: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Ypiranga_FC_%28Erechim%29_%28Logo%29.png" },
+
+    // Outros clubes
+    { nome: "Ponte Preta", imagem: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Escudo_Oficial_Ponte_Preta.png/640px-Escudo_Oficial_Ponte_Preta.png" },
+    { nome: "Retrô", imagem: "https://upload.wikimedia.org/wikipedia/pt/4/4b/Retr%C3%B4_FC_Brasil-PE_%28BRA%29.png" },
+    { nome: "Portuguesa", imagem: "https://upload.wikimedia.org/wikipedia/commons/d/db/Portuguesa_de_Desportos.png" },
+    { nome: "São Caetano", imagem: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/6084.png" },
+    { nome: "Noroeste", imagem: "https://images.seeklogo.com/logo-png/4/2/esporte-clube-noroeste-bauru-sao-paulo-logo-png_seeklogo-49315.png" },
+    { nome: "Santo André", imagem: "https://upload.wikimedia.org/wikipedia/pt/5/50/Santo_Andre_escudo.png" },
+    { nome: "Ituano", imagem: "https://upload.wikimedia.org/wikipedia/pt/2/28/ItuanoFC.png" },
+    { nome: "Água Santa", imagem: "https://upload.wikimedia.org/wikipedia/pt/b/b8/Ecaguasanta.png" },
+    { nome: "Santa Cruz", imagem: "https://www.ogol.com.br/img/logos/equipas/2253_imgbank_1683641104.png" }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let questions = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function generateQuestions() {
+      questions = shuffle([...clubes]).slice(0, 15);
+    }
+
+    function showQuestion() {
+      const question = questions[currentQuestion];
+      document.getElementById("club-logo").src = question.imagem;
+
+      const options = shuffle([
+        question.nome,
+        ...shuffle(clubes.filter(c => c.nome !== question.nome)).slice(0, 3).map(c => c.nome)
+      ]);
+
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("feedback").innerHTML = "";
+
+      options.forEach(option => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = option;
+        div.onclick = () => checkAnswer(option);
+        document.getElementById("options").appendChild(div);
+      });
+
+      document.getElementById("progress").textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+    }
+
+    function checkAnswer(answer) {
+      const correct = questions[currentQuestion].nome;
+      if (answer === correct) {
+        score += 10;
+        document.getElementById("feedback").innerHTML = "Acertou!";
+        document.getElementById("feedback").className = "acerto";
+      } else {
+        document.getElementById("feedback").innerHTML = `Errou, era ${correct}`;
+        document.getElementById("feedback").className = "erro";
+      }
+      document.getElementById("score").textContent = `Pontua  o: ${score}`;
+
+      currentQuestion++;
+      setTimeout(() => {
+        if (currentQuestion < questions.length) {
+          showQuestion();
+        } else {
+          showFinalMessage();
+        }
+      }, 1500);
+    }
+
+    function showFinalMessage() {
+      let message = "";
+      if (score <= 50) message = "Você acompanha o futebol BR? MELHORE!";
+      else if (score <= 100) message = "Você  tem conhecimentos. MAS AINDA PODE MELHORAR!";
+      else message = "Estamos com um THE BEST, você é genial!!!";
+
+      document.getElementById("final-message").textContent = message;
+      document.getElementById("progress").textContent = "";
+    }
+
+    function startQuiz() {
+      score = 0;
+      currentQuestion = 0;
+      document.getElementById("score").textContent = "Pontua  o: 0";
+      document.getElementById("final-message").textContent = "";
+      generateQuestions();
+      showQuestion();
+    }
+
+    startQuiz();
+  </script>
+
+</body>
+</html>

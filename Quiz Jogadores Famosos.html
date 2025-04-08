@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Futebolístico</title>
+ <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #a3c9f1;  /* Fundo azul pastel claro */
+    text-align: center;
+    padding: 20px;
+  }
+  .quiz-container {
+    background-color: #d4e6f9;  /* Fundo azul pastel um pouco mais escuro */
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .player-img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 12px;
+  }
+  .options {
+    margin-top: 20px;
+  }
+  .option-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px auto;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f8ff; /* Azul bem clarinho */
+    color: #003366;
+  }
+  .option-btn:hover {
+    background-color: #e0efff; /* Tom um pouco mais forte no hover */
+  }
+  .result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #003366;
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+
+</head>
+<body>
+
+<div class="quiz-container">
+  <h2>Quem é esse jogador?</h2>
+  <img id="player-img" class="player-img" src="" alt="Jogador" />
+  <div class="options" id="options"></div>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  const players = [
+  { name: 'Lionel Messi', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lionel_Messi_20180626.jpg/250px-Lionel_Messi_20180626.jpg' },
+  { name: 'Cristiano Ronaldo', img: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg' },
+  { name: 'Pelé', img: 'https://portalverona.org/images/noticias/353/11351cdcb3d136e8e9dbbf6d324eb8ee.jpeg' },
+  { name: 'Diego Maradona', img: 'https://lendasdofutebol.com/wp-content/uploads/2021/02/maradona-selecao-1986-350-x-262-optimized.jpg' },
+  { name: 'Neymar Jr', img: 'https://s2-ge.glbimg.com/1kr8dtCtz0huOFtXZ6hi-YS9Nhg=/0x0:1364x2048/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2025/W/A/t8bMHgRRi8e6ba7AJbAg/gip1srbwaaand71.jpg' },
+  { name: 'Kylian Mbappé', img: 'https://i.guim.co.uk/img/media/b7407303857fd49203968a79c6963316f9c6f43f/196_57_2671_3338/master/2671.jpg?width=445&quality=85&dpr=1&s=none' },
+  { name: 'Zinedine Zidane', img: 'https://i.pinimg.com/736x/fc/ac/e7/fcace74c61a5e7f490c470bb8be4550a.jpg' },
+  { name: 'Ronaldo Nazário', img: 'https://i.pinimg.com/474x/45/b2/e1/45b2e125ad706ade44d93a76635bf90c.jpg' },
+  { name: 'Ronaldinho Gaúcho', img: 'https://conteudo.imguol.com.br/c/esporte/d1/2018/02/23/ronaldinho-gaucho-no-atletico-mg-1519398291316_v2_3x4.jpg' },
+  { name: 'David Beckham', img: 'https://lendasdofutebol.com/wp-content/uploads/2021/11/david-beckham-350x260-1-optimized.jpg' },
+  { name: 'Zlatan Ibrahimovic', img: 'https://tntsports.com.br/__export/1683221658634/sites/esporteinterativo/img/2023/03/16/ibrahimovic-gettyimages-1473528492-2048x2048_crop1678971720619.jpg_423682103.jpg' },
+  { name: 'Luis Suárez', img: 'https://conteudo.imguol.com.br/c/noticias/22/2020/06/15/atacante-luis-suarez-durante-partida-entre-barcelona-e-deportivo-alaves-1592236967349_v2_3x4.jpg' },
+  { name: 'Andrés Iniesta', img: 'https://i.pinimg.com/474x/0c/36/34/0c363417c540c705db3b04e7c9231d53.jpg' },
+  { name: 'Xavi Hernández', img: 'https://akcdn.detik.net.id/customthumb/2015/06/12/75/barca.jpg?w=600&q=90' },
+  { name: 'Gareth Bale', img: 'https://imageio.forbes.com/specials-images/imageserve/5ecec1c2938ec500060ab3ba/0x0.jpg?format=jpg&crop=1231,1232,x838,y159,safe&height=416&width=416&fit=bounds' },
+  { name: 'Karim Benzema', img: 'https://newafricanmagazine.com/wordpress/wp-content/uploads/2021/06/000_8WT63Q-scaled-e1623237506605.jpeg' },
+  { name: 'Robert Lewandowski', img: 'https://img.fcbayern.com/image/upload/t_cms-6x9-seo/v1616252266/cms/public/images/fcbayern-com/homepage/saison-20-21/galerien/spiele/FCB-VfB/16_FCBVfB_210320_DON.jpg' },
+  { name: 'Sergio Ramos', img: 'https://conteudo.imguol.com.br/c/esporte/e0/2021/06/02/sergio-ramos-zagueiro-do-real-madrid-1622648498967_v2_3x4.jpg' },
+  { name: 'Gerard Piqué', img: 'https://conteudo.imguol.com.br/c/esporte/8c/2022/08/11/gerard-pique-zagueiro-do-barcelona-em-acao-na-pre-temporada-de-2223-1660222404209_v2_450x600.jpg' },
+  { name: 'Paolo Maldini', img: 'https://i.pinimg.com/736x/ac/33/a7/ac33a7cc20678d0530adee1f0c7916fe.jpg' },
+  { name: 'Francesco Totti', img: 'https://lncimg.lance.com.br/cdn-cgi/image/width=950,quality=75,fit=pad,format=webp/uploads/2017/02/02/5893898eb3c2d.jpeg' },
+  { name: 'Andrea Pirlo', img: 'https://i.pinimg.com/474x/4b/09/ac/4b09ac2aa53599a3fd64347394badc97.jpg' },
+  { name: 'Thierry Henry', img: 'https://conteudo.imguol.com.br/c/esporte/d2/2020/05/15/thierry-henry-na-epoca-em-que-atuava-pelo-barcelona-1589573527872_v2_896x1280.jpg' },
+  { name: 'Dennis Bergkamp', img: 'https://conteudo.imguol.com.br/c/esporte/ae/2020/05/08/dennis-bergkamp-em-acao-pelo-arsenal-em-2005-1588969088658_v2_1146x1920.jpg' },
+  { name: 'Patrick Vieira', img: 'https://www.ogol.com.br/img/jogadores/21/737221_ori__20201231025840_patrick_vieira.jpg' },
+  { name: 'Frank Lampard', img: 'https://static.wixstatic.com/media/aa1fd2_5f2f6bdc599f4bb7bd4d77b9d2998999~mv2.jpg/v1/fill/w_350,h_541,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa1fd2_5f2f6bdc599f4bb7bd4d77b9d2998999~mv2.jpg' },
+  { name: 'Steven Gerrard', img: 'https://static.wikia.nocookie.net/futbol/images/8/8f/Gerard.png/revision/latest?cb=20180731213920' },
+  { name: 'Wayne Rooney', img: 'https://conteudo.imguol.com.br/c/esporte/fb/2019/06/10/wayne-rooney-em-acao-com-a-camisa-do-manchester-united-1560203799125_v2_3x4.jpg' },
+  { name: 'Michael Owen', img: 'https://preview.redd.it/michael-owen-foi-tudo-isso-v0-yy22qn6a8pwc1.jpeg?auto=webp&s=38579840ad43b0b67fdb241a413fcf917cd9676f' },
+  { name: 'Alan Shearer', img: 'https://imortaisdofutebol.com/wp-content/uploads/2023/03/Alan-Shearer.webp' },
+  { name: 'Eric Cantona', img: 'https://imortaisdofutebol.com/wp-content/uploads/2013/03/01-cantona-run-785x1024.jpg' },
+  { name: 'George Best', img: 'https://efemeridesdoefemello.com/wp-content/uploads/2015/11/25nov15.jpg' },
+  { name: 'Johan Cruyff', img: 'https://newr7-r7-prod.web.arc-cdn.net/resizer/v2/KYZKW4WKQBJ7ZBD5CL4O5PN5RE.jpg?auth=0ef86a3a1da28d5e500cb3b77a6be5699b02ceac193aab331b8e7d96d860a38b&width=640&height=640' },
+  { name: 'Eusébio', img: 'https://znaki.fm/static/content/thumbs/1000x1000/a/b4/crzajn---c800x800x0sx0s--87494d59d7251896c706be7ea39b9b4a.jpg' },
+  { name: 'Romário', img: 'https://lendasdofutebol.com/wp-content/uploads/2022/02/romario_copa-1994-optimized.jpg' },
+  { name: 'Rivaldo', img: 'https://fcb-abj-pre.s3.amazonaws.com/img/jugadors/741_rivaldo.jpg' },
+  { name: 'Rogério Ceni', img: 'https://esportenewsmundo.com.br/wp-content/uploads/2021/10/ceni-gol.jpg' },
+  { name: 'Marcos', img: 'https://p2.trrsf.com/image/fget/cf/1200/1600/middle/images.terra.com/2012/12/23/marcosgoledsonlopesjrterra.JPG' },
+  { name: 'Dida', img: 'https://www.imortaisdofutebol.com/wp-content/uploads/2018/11/Dida_Action.jpg' },
+  { name: 'Erling Haaland', img: 'https://cdn.vox-cdn.com/thumbor/RGPWTi2M0XKJgCeC6R6Ci6qOGH4=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/24028388/1424231848.jpg' },
+  { name: 'Kevin De Bruyne', img: 'https://ohoje.com/wp-content/uploads/2025/04/Semis-819x1024.jpg' },
+  { name: 'Vinícius Júnior', img: 'https://tntsports.com.br/__export/1710514088921/sites/esporteinterativo/img/2024/03/15/vini_jr__-_real.jpg_423682103.jpg' },
+  { name: 'Mohamed Salah', img: 'https://media.tycsports.com/files/2025/01/03/800849/salah-tercer-maximo-goleador-de-liverpool-dejara-el-club-en-julio_416x555.webp?v=2' },
+  { name: 'Harry Kane', img: 'https://conteudo.imguol.com.br/c/esporte/7d/2024/06/24/harry-kane-atacante-da-inglaterra-em-jogo-contra-a-dinamarca-pela-eurocopa-1719241053304_v2_3x4.jpg' },
+  { name: 'Sergio Agüero', img: 'https://tntsports.com.br/__export/1590423822182/sites/esporteinterativo/img/2020/05/25/aguero_city.jpg_423682103.jpg' },
+  { name: 'Adriano Imperador', img: 'https://i.pinimg.com/736x/b2/73/32/b2733248b1f02b8334d0f20c77ac3f6e.jpg' },
+  { name: 'Antoine Griezmann', img: 'https://i.pinimg.com/736x/58/e2/d5/58e2d572f0d0221d1a44a75063a37827.jpg' },
+  { name: 'Pedri', img: 'https://i.pinimg.com/736x/9e/e7/f3/9ee7f3faa3938d7306fb32037772af4b.jpg' },
+  { name: 'Jude Bellingham', img: 'https://conteudo.imguol.com.br/c/esporte/2f/2023/10/28/bellingham-comemora-apos-marcar-pelo-real-madrid-contra-o-barcelona-no-espanhol-1698508629877_v2_3x4.jpg' },
+  { name: 'Casemiro', img: 'https://cloudfront-eu-central-1.images.arcpublishing.com/diarioas/PIKOJ4P6O5B33KOGSQL2BDHFXQ.jpg' },
+  { name: 'Deco', img: 'https://i.pinimg.com/736x/f0/99/e4/f099e4b286e6a50b49845c676c91c648.jpg' },
+  { name: 'Luka Modric', img: 'https://tntsports.com.br/__export/1736436120541/sites/esporteinterativo/img/2025/01/09/modric_1.jpg_423682103.jpg' },
+  { name: 'Toni Kroos', img: 'https://i.pinimg.com/736x/88/35/8c/88358c26beeb7d9cd5a0a824bd40e2e1.jpg' },
+  { name: 'Sadio Mané', img: 'https://s2-ge.glbimg.com/-6gJStKNtyoyOh0wY2V21bkuxvE=/0x0:2984x3730/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2022/B/5/kbAawzRHOZhFQyMe8vlg/mane.jpeg' },
+  { name: 'Ángel Di María', img: 'https://i.pinimg.com/736x/de/8d/6d/de8d6dcd6372f601087b651a3944f475.jpg' },
+  { name: 'Rodri', img:'https://i.guim.co.uk/img/media/9485f61ee19e4ea32bed766e7a36a38a492dbd55/216_120_3447_2068/master/3447.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=98ea6b870d5eb470e60b0f1aefea3fb4' },
+ { name: 'Schweinsteiger', img: 'https://i.pinimg.com/736x/95/4d/67/954d67f7f97375eba689839789c41c09.jpg' },
+ { name: 'Manuel Neuer', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/20180602_FIFA_Friendly_Match_Austria_vs._Germany_Manuel_Neuer_850_0723.jpg/960px-20180602_FIFA_Friendly_Match_Austria_vs._Germany_Manuel_Neuer_850_0723.jpg' },
+ { name: 'Buffon', img: 'https://i.pinimg.com/736x/18/8b/84/188b843f7375cc82013917f5351a488a.jpg' },
+  ];
+
+  const allNames = players.map(p => p.name);
+
+  let score = 0;
+  let currentQuestion = 0;
+  const totalQuestions = 11;
+
+  function getRandomPlayer() {
+    return players[Math.floor(Math.random() * players.length)];
+  }
+
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  function generateQuestion() {
+    document.getElementById('result').textContent = '';
+    
+    const correctPlayer = getRandomPlayer();
+    const img = document.getElementById('player-img');
+    img.src = correctPlayer.img;
+
+    let options = [correctPlayer.name];
+
+    while (options.length < 4) {
+      const randomName = allNames[Math.floor(Math.random() * allNames.length)];
+      if (!options.includes(randomName)) {
+        options.push(randomName);
+      }
+    }
+
+    options = shuffle(options);
+
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = '';
+
+    options.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = name;
+      btn.onclick = () => {
+        if (name === correctPlayer.name) {
+          score++;
+          document.getElementById('result').textContent = 'Acertou!';
+          document.getElementById('result').style.color = 'green';
+        } else {
+          document.getElementById('result').textContent = `Errou! Era ${correctPlayer.name}`;
+          document.getElementById('result').style.color = 'red';
+        }
+
+        setTimeout(() => {
+          currentQuestion++;
+          if (currentQuestion < totalQuestions) {
+            generateQuestion();
+          } else {
+            showFinalScore();
+          }
+        }, 1000);
+      };
+      optionsDiv.appendChild(btn);
+    });
+  }
+
+ function showFinalScore() {
+  let message = '';
+  if (score <= 4) {
+    message = 'Xiii, pode melhorar hein!';
+  } else if (score <= 7) {
+    message = 'Você sabe um pouco, parabéns!';
+  } else {
+    message = 'Craque demais! Você manja muito!';
+  }
+
+  document.querySelector('.quiz-container').innerHTML = `
+    <h2>Fim do Quiz!</h2>
+    <p>Você acertou ${score} de ${totalQuestions} perguntas.</p>
+    <p>${message}</p>
+    <button onclick="location.reload()">Jogar novamente</button>
+  `;
+}
+
+          // Avança após 1.0s
+          setTimeout(() => {
+            questaoAtual++;
+            mostrarPergunta();
+          }, 1000);
+
+
+  generateQuestion();
+</script>
+
+</body>
+</html>

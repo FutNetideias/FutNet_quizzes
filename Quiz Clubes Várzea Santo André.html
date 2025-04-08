@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz de Clubes de Futebol da Várze de Santo André</title>
+    <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #fff5f0; /* fundo claro com tom rosado */
+    padding: 30px;
+  }
+
+  #quiz-container {
+    background: #ffe8e0; /* vermelho pastel bem claro */
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border: 2px solid #ffd700; /* contorno dourado suave */
+  }
+
+  img {
+    width: 150px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 2px solid #81c784; /* detalhe em verde claro */
+  }
+
+  .option {
+    display: block;
+    background: #fff0f0; /* rosa clarinho */
+    padding: 12px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s;
+    border: 1px solid #ffd700; /* contorno dourado */
+    font-weight: bold;
+  }
+
+  .option:hover {
+    background: #ffd6d6; /* rosa pastel mais vivo no hover */
+  }
+
+  #score {
+    font-size: 1.3em;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #2e7d32; /* verde Copa */
+  }
+
+  .restart-btn {
+    margin-top: 20px;
+    padding: 10px 22px;
+    font-size: 16px;
+    background-color: #ffd700; /* dourado Copa */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    font-weight: bold;
+  }
+
+  .restart-btn:hover {
+    background-color: #f4c400; /* dourado mais escuro */
+    color: #1a1a1a;
+  }
+
+  #feedback {
+    font-size: 1.1em;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+
+  .acerto {
+    color: #388e3c; /* verde acerto */
+  }
+
+  .erro {
+    color: #d32f2f; /* vermelho forte para erro */
+  }
+
+  #progress {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #444;
+  }
+</style>
+
+</head>
+<body>
+
+  <div id="quiz-container">
+    <h2>Que clube é esse?</h2>
+    <img id="club-logo" src="" alt="Escudo do clube">
+    <div id="options"></div>
+    <div id="feedback"></div>
+    <div id="score">Pontuação: 0</div>
+    <div id="progress"></div>
+    <div id="final-message"></div>
+    <button class="restart-btn" onclick="startQuiz()">Jogar Novamente</button>
+  </div>
+
+  <script>
+    const clubes = [
+      { nome: "E.C. Colorado", imagem: "https://www.ligasa.com.br/2023/Andrezinho/imagens/Colorado.png" },
+      { nome: "Madureira F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Madureira.png" },
+      { nome: "Aclimação", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Aclimacao.png" },
+      { nome: "Vila Nova", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/VilaNova.png" },
+      { nome: "Santa Bárbara", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/SantaBarbara.png" },
+      { nome: "Jardim Irene", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Irene.png" },
+      { nome: "Sacadura Cabral", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Sacadura.png" },
+      { nome: "Alvorada", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Alvorada.png" },
+      { nome: "Guaraciaba", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Guara.png" },
+      { nome: "Renascer F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Renascer.png" },
+      { nome: "Vila Junqueira", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Junqueira.png" },
+      { nome: "Alvi Negro", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/AlviNegro.png" },
+      { nome: "União Andreense", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UniaoAndreense.png" },
+      { nome: "Jardim Utinga", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Utinga.png" },
+      { nome: "Jardim Stella", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Stella.png" },
+      { nome: "Ourinhos", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Ourinhos.png" },
+      { nome: "A.E. Jardim Ana Maria", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Ana.png" },
+      { nome: "União São Jorge", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UniaoSaoJorge.png" },
+      { nome: "Vila Sá", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/VilaSa.png" },
+      { nome: "Mocidade", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Mocidade.png" },
+      { nome: "Comercial", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Comercial.png" },
+      { nome: "Vila Suíça", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Suica.png" },
+      { nome: "Santa Cristina", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/SantaCristina.png" },
+      { nome: "União do Morro", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UniaoMorro.png" },
+      { nome: "E.C. IV Centenário", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Centenario.png" },
+      { nome: "Lua Nova F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Lua.png" },
+      { nome: "XV de Julho F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/XV.png" },
+      { nome: "E.C. Centreville", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Centreville.png" },
+      { nome: "Ouro Verde Popular F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Ouro.png" },
+      { nome: "União São Luiz F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Luiz.png" },
+      { nome: "Marajoara", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Marajoara.png" },
+      { nome: "União e Força", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UniaoForca.png" },
+      { nome: "Unidos F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UnidosFC.png" },
+      { nome: "Corinthians F.C. S.A.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/CorinthiansSA.png" },
+      { nome: "Leões do Cruzado", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Leoes.png" },
+      { nome: "S.E. Renovação", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Renovacao.png" },
+      { nome: "E.C. Vila Guiomar", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Guiomar.png" },
+      { nome: "A.A. Batuquinho", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Batuquinho.png" },
+      { nome: "Renascente F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Renascente.png" },
+      { nome: "E.C. Flamengo", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Flamengo.png" },
+      { nome: "E.C. Alhambra", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Alhambra.png" },
+      { nome: "Rio Avante", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/RA.png" },
+      { nome: "A.A. Naútico", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Nautico.png" },
+      { nome: "E.C. Primeira Camisa", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Primeira.png" },
+      { nome: "Desportivo Gaza", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Gaza.png" },
+      { nome: "Ipiranga F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Ipiranga.png" },
+      { nome: "Jardim Itapoan", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Itapua.png" },
+      { nome: "E.C. Nacional", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Nacional.png" },
+      { nome: "A.A. União Jd Stella", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UJS.png" },
+      { nome: "A.E. Vila Rica", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Rica.png" },
+      { nome: "C.A. Boca Junior", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Boca.png" },
+      { nome: "E.C. Prédios Velhos", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Predios.png" },
+      { nome: "E.C. Unidos da Vila", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UnidosdaVila.png" },
+      { nome: "Jardim do Estádio F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Estadio.png" },
+      { nome: "Lagoinha F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Lagoinha.png" },
+      { nome: "Sporting City", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Sporting.png" },
+      { nome: "A.D. Gerassi F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Gerassi.png" },
+      { nome: "G.E. Tibiriçá", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Tibirica.png" },
+      { nome: "La Máfia F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Mafia.png" },
+      { nome: "Leões de Ouro F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/LeoesOuro.png" },
+      { nome: "Peralta F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Peralta.png" },
+      { nome: "S.E. Humaitá", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Humaita.png" },
+      { nome: "S.E. Vila João Ramalho", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Ramalho.png" },
+      { nome: "Vila do Sapo", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Sapo.png" },
+      { nome: "A.E. Araguaia", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Araguaia.png" },
+      { nome: "E.C. Jd Sorocaba", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Sorocaba.png" },
+      { nome: "E.C. Unidos da FG", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/UnidosFG.png" },
+      { nome: "E.C. Valparaiso", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Paraiso.png" },
+      { nome: "Raizes da Villa F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Raizes.png" },
+      { nome: "S.C. Indianas", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Indianas.png" },
+      { nome: "União Racial F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Racial.png" },
+      { nome: "Villa Humaitá F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/VilaHumaita.png" },
+      { nome: "A.A. Itabaiana", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Itabaiana.png" },
+      { nome: "A.E. Corinthians", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/CorinthiansVP.png" },
+      { nome: "Boa Esperança F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/BoaEsperanca.png" },
+      { nome: "E.C. Fúria Capuava", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Furia.png" },
+      { nome: "Família F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Familia.png" },
+      { nome: "G.E. Aliança", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Alianca.png" },
+      { nome: "G.E. Jardim Santo Alberto", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Alberto.png" },
+      { nome: "Pressão Total F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Pressao.png" },
+      { nome: "Primos F.C. S.A.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Primos.png" },
+      { nome: "S.E. Racing", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Racing.png" },
+      { nome: "S.E. Tigres S.V.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Tigres.png" },
+      { nome: "Transrodi F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Rodi.png" },
+      { nome: "Treze F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Treze.png" },
+      { nome: "Vasco da Gama F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Vasco.png" },
+      { nome: "Vila Palmares F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Palmares.png" },
+      { nome: "XV Futebol Clube", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/XV1.png" },
+      { nome: "A.Muca F.C.", imagem: "https://www.ligasa.com.br/2025/imagens/Escudos/Muca.png" }
+
+
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let questions = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function generateQuestions() {
+      questions = shuffle([...clubes]).slice(0, 15);
+    }
+
+    function showQuestion() {
+      const question = questions[currentQuestion];
+      document.getElementById("club-logo").src = question.imagem;
+
+      const options = shuffle([
+        question.nome,
+        ...shuffle(clubes.filter(c => c.nome !== question.nome)).slice(0, 3).map(c => c.nome)
+      ]);
+
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("feedback").innerHTML = "";
+
+      options.forEach(option => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = option;
+        div.onclick = () => checkAnswer(option);
+        document.getElementById("options").appendChild(div);
+      });
+
+      document.getElementById("progress").textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+    }
+
+    function checkAnswer(answer) {
+      const correct = questions[currentQuestion].nome;
+      if (answer === correct) {
+        score += 10;
+        document.getElementById("feedback").innerHTML = "Acertou!";
+        document.getElementById("feedback").className = "acerto";
+      } else {
+        document.getElementById("feedback").innerHTML = `Errou, era ${correct}`;
+        document.getElementById("feedback").className = "erro";
+      }
+      document.getElementById("score").textContent = `Pontuação: ${score}`;
+
+      currentQuestion++;
+      setTimeout(() => {
+        if (currentQuestion < questions.length) {
+          showQuestion();
+        } else {
+          showFinalMessage();
+        }
+      }, 1500);
+    }
+
+    function showFinalMessage() {
+      let message = "";
+      if (score <= 50) message = "Você acompanha a várzea de Santo André?";
+      else if (score <= 100) message = "Você tem conhecimentos. Mandou bem!";
+      else message = "Estamos com um monstro da várzea, você é genial!!!";
+
+      document.getElementById("final-message").textContent = message;
+      document.getElementById("progress").textContent = "";
+    }
+
+    function startQuiz() {
+      score = 0;
+      currentQuestion = 0;
+      document.getElementById("score").textContent = "Pontuação: 0";
+      document.getElementById("final-message").textContent = "";
+      generateQuestions();
+      showQuestion();
+    }
+
+    startQuiz();
+  </script>
+
+</body>
+</html>

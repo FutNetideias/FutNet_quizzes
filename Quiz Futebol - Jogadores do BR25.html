@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Futebolístico</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      text-align: center;
+      padding: 20px;
+    }
+    .quiz-container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .player-img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 12px;
+    }
+    .options {
+      margin-top: 20px;
+    }
+    .option-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px auto;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #e0e0e0;
+    }
+    .option-btn:hover {
+      background-color: #d0d0d0;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <h2>Quem é esse jogador?</h2>
+  <img id="player-img" class="player-img" src="" alt="Jogador" />
+  <div class="options" id="options"></div>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  const players = [
+    { name: 'Vegetti', img: 'https://www.cnnbrasil.com.br/wp-content/uploads/sites/12/2025/01/vegetti-vasco-e1738010099282.jpg?w=1200&h=1200&crop=1' },
+    { name: 'Philippe Coutinho', img: 'https://s2-oglobo.glbimg.com/QdzBWU3QEME0yiAUNu28NKQdq8s=/0x0:1080x1350/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2024/l/p/AcW4exRPiEfXl2juMxkw/gsifp6sxmaaxkjx.jpg' },
+    { name: 'Neymar Jr', img: 'https://images.ctfassets.net/3mv54pzvptwz/5gMFM7EkKcQSiZRcemkuTk/eb1aab1b744d9c65b05a2a65e67133ca/54309793446_bcbeccf726_o.jpg' },
+    { name: 'Hulk', img: 'https://static.wikia.nocookie.net/futebol/images/0/07/Hulk_Galo.jpg/revision/latest/scale-to-width-down/300?cb=20220105183923' },
+    { name: 'Deyverson', img: 'https://www.opovo.com.br/_midias/jpg/2025/03/30/820x460/1_fortaleza_fluminense_brasileirao_serie_a_arena_castelao_47_46-33713001.jpg' },
+    { name: 'Bruno Henrique', img: 'https://conteudo.imguol.com.br/c/esporte/52/2021/07/25/bruno-henrique-comemora-gol-marcado-pelo-flamengo-1627245296459_v2_3x4.jpg' },
+    { name: 'Bernabei', img:'https://intprdbrscms.internacional.com.br/cms/assets/Banner_Site_Jogadores_2000x2500_Bernabei_83968b809d.png' },
+    { name: 'Matheus Pereira', img:'https://s2-ge.glbimg.com/1Y3VQ40Wcrq5sVjkyW-K_5zUPoU=/0x0:1638x2048/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/D/V/LVOlBbQYqbKIA9z8kY9Q/53842599443-ae9bf480e2-k.jpg' },
+    { name: 'Alex Muralha', img: 'https://www.gazetaderiopreto.com.br/wp-content/uploads/2023/02/WhatsApp-Image-2023-02-05-at-20.19.27.jpeg' },
+    { name: 'Reinaldo', img: 'https://img.band.uol.com.br/image/2025/01/06/reinaldo-e-anunciado-como-reforco-do-mirassol-13014.jpg'},
+    { name: 'Luciano', img: 'https://conteudo.imguol.com.br/c/esporte/a0/2022/07/28/luciano-abre-o-placar-para-o-sao-paulo-contra-o-america-mg-pela-copa-do-brasil-1659051805889_v2_1x1.jpg' },
+    { name: 'Richard Rios', img: 'https://i.pinimg.com/736x/59/7f/6c/597f6cc5c436f1cd8e6deb9be2bf20c7.jpg' },
+    { name: 'Julio Furch', img: 'https://tntsports.com.br/__export/1712332516238/sites/esporteinterativo/img/2024/04/05/julio_furch_-_20240405-123732_1927146_2871.jpg_423682103.jpg' },
+    { name: 'Calleri', img: 'https://portalcbncampinas.com.br/wp-content/uploads/2024/03/portalcbncampinas.com.br-calleri-sente-joelho-e-aguarda-exames-para-saber-se-e-algo-grave-calleri-sao-paulo-1207.jpeg' },
+    { name: 'Diego Pituca', img: 'https://diariodevotuporanga.com.br/wp-content/uploads/2025/03/B3-6-8.jpg' },
+    { name: 'Lucas Moura', img: 'https://s2-ge.glbimg.com/2ev5FgxBohaw5B7MPBnGU_vqKWo=/0x0:1638x2048/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2023/N/r/jWU2gjTwiPtLPNQuPkyg/f2innebxwaaqut8.jpg' },
+    { name: 'Guilherme', img: 'https://www.gaveanews.com/wp-content/uploads/Guilherme-com-a-camisa-do-Santos.jpeg' },
+    { name: 'Yeferson Soteldo', img: 'https://conteudo.imguol.com.br/c/esporte/b6/2023/11/15/yeferson-soteldo-atacante-do-santos-1700063485696_v2_1x1.jpg' },
+    { name: 'Cássio', img: 'https://conteudo.imguol.com.br/c/esporte/c9/2024/08/15/cassio-goleiro-do-cruzeiro-grita-durante-jogo-contra-o-boca-juniors-pela-sul-americana-1723773456911_v2_1280x1920.jpg' },
+    { name: 'Arboleda', img: 'https://conteudo.imguol.com.br/c/esporte/52/2022/06/24/robert-arboleda-zagueiro-do-sao-paulo-e-da-selecao-equatoriana-1656073071285_v2_450x600.jpg' },
+    { name: 'Thiago Silva', img: 'https://www.netflu.com.br/wp-content/uploads/2024/05/GNADH7NXIAApNTB.jpeg' },
+    { name: 'Gabriel Barbosa', img: 'https://www.cnnbrasil.com.br/wp-content/uploads/sites/12/2025/01/gabigol-cruzeiro-apresentacao-e1736011378490.jpg?w=1200&h=1200&crop=1' },
+    { name: 'De Arrascaeta', img: 'https://conteudo.imguol.com.br/c/esporte/47/2023/10/23/arrascaeta-durante-jogo-do-flamengo-contra-o-vasco-pelo-campeonato-brasileiro-1698091260611_v2_450x450.jpg' },
+    { name: 'Memphis Depay', img: 'https://conteudo.imguol.com.br/c/esporte/a1/2024/12/03/memphis-depay-comemora-gol-marcado-pelo-corinthians-contra-o-bahia-pelo-brasileirao-1733273434152_v2_450x600.jpg' },
+    { name: 'Yuri Alberto', img: 'https://centraldotimao.com.br/wp-content/uploads/2022/08/agenciacorinthians-fotoyurialbertocomemorando.jpg' },
+    { name: 'Rodrigo Garro', img: 'https://static.gazetaesportiva.com/uploads/2025/01/agenciacorinthians-foto-230698.webp' },
+    { name: 'Estêvão', img: 'https://conteudo.imguol.com.br/c/esporte/fb/2024/11/08/estevao-comemora-gol-marcado-pelo-palmeiras-durante-jogo-contra-o-gremio-pelo-brasileirao-1731118503808_v2_3x4.jpg' },
+    { name: 'Vitor Roque', img: 'https://conteudo.imguol.com.br/c/esporte/ce/2025/03/10/vitor-roque-em-acao-durante-jogo-entre-palmeiras-e-sao-paulo-pelo-paulistao-1741655187948_v2_3x4.jpg' },
+    { name: 'Raphael Veiga', img: 'https://conteudo.imguol.com.br/c/esporte/87/2024/09/26/raphael-veiga-do-palmeiras-com-a-camisa-3-dourada-apos-marcar-um-golaco-de-falta-contra-o-criciuma-1727384715390_v2_1x1.jpg' },
+    { name: 'Gil', img: 'https://conteudo.imguol.com.br/c/esporte/1f/2024/04/19/gil-em-treino-do-santos-no-ct-rei-pele-1713571684275_v2_1536x1920.jpg' },
+    { name: 'Alan Patrick', img: 'https://p2.trrsf.com/image/fget/cf/1200/1600/middle/images.terra.com/2023/10/12/1680914199-internacional-v-gremio-brasileirao-2023-1-2048x1363.jpg' },
+    { name: 'Oscar', img: 'https://conteudo.imguol.com.br/c/esporte/ba/2025/01/26/oscar-comemora-gol-marcado-pelo-sao-paulo-contra-o-corinthians-no-paulistao-1737936246232_v2_1x1.jpg' },
+    { name: 'Savarino', img: 'https://cdn1.vamofutebol.com/uploads/5/2024/07/GettyImages-2152192789-683x1024.jpg' },
+    { name: 'Igor Jesus', img: 'https://p2.trrsf.com/image/fget/cf/1200/1600/middle/images.terra.com/2024/09/01/2007797829-539624911707777f1b55ek.jpg' },
+    { name: 'Ganso', img: 'https://conteudo.imguol.com.br/c/esporte/2e/2022/08/01/ganso-do-fluminense-comemora-gol-contra-o-santos-pelo-brasileirao-1659401562567_v2_1x1.jpg' },
+    { name: 'Germán Cano', img: 'https://conteudo.imguol.com.br/c/esporte/8f/2023/08/24/cano-comemora-gol-do-fluminense-sobre-o-olimpia-em-jogo-da-libertadores-1692928961700_v2_450x600.jpg' },
+    { name: 'Rafael', img: 'https://i.pinimg.com/736x/64/59/d0/6459d032fbc23a77eb7e7a35d52d8d4c.jpg' },
+    { name: 'Weverton', img: 'https://p2.trrsf.com/image/fget/cf/1200/1600/middle/images.terra.com/2023/04/17/813428682-528194472277349d5a144o.jpg' },
+    { name: 'Wellington Rato', img: 'https://conteudo.imguol.com.br/c/esporte/d4/2025/01/10/wellington-rato-foi-apresentado-como-novo-jogador-do-vitoria-1736556672622_v2_1x1.jpg' },
+    { name: 'Matheuzinho', img: 'https://s2-ge.glbimg.com/jUv9p_hOywU4P7_psmkryYuFsig=/0x0:2048x1365/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/6/A/kKu6MQQ6AmYkBmzBYx8w/53886285299-95fc94eff9-k.jpg' },
+    { name: 'Jean Lucas', img: 'https://lncimg.lance.com.br/cdn-cgi/image/width=850,quality=75,format=webp/uploads/2024/12/b1f4eccb-2b8b-4571-b275-5db9f0aa5c97.jpg' },
+    { name: 'Éverton Ribeiro', img: 'https://ds-images.bolavip.com/news/image/800/800/?src=https://images.bolavip.com/webp/br/full/BBR_20240619_BBR_547004_AGIF24050523501398-scaled.webp' },
+    { name: 'Léo Gamalho', img: 'https://images2.minutemediacdn.com/image/upload/c_crop,w_4961,h_2790,x_223,y_374/c_fill,w_1200,ar_1:1,f_auto,q_auto,g_auto/images/voltaxMediaLibrary/mmsport/90min_pt-BR_international_web/01jh0n3ryey2bv386nnr.jpg' },
+    { name: 'Paulinho', img: 'https://conteudo.imguol.com.br/c/esporte/02/2025/03/28/paulinho-em-acao-durante-treino-do-palmeiras-na-academia-de-futebol-1743197987537_v2_450x450.jpg' },
+    { name: 'Eduardo Sasha', img: 'https://s2-ge.glbimg.com/ZMoMva9yXbwbNufMnRs2Qa6yGzE=/0x0:3000x2000/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/y/e/DCa1FOR46izBaUL5x9cg/agif24120118520568.jpg' },
+    { name: 'Matheus Fernandes', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/S%C3%A9rie_A1_Bragantino_1x0_Corinthians_%2852632089757%29_%28cropped%29.jpg/800px-S%C3%A9rie_A1_Bragantino_1x0_Corinthians_%2852632089757%29_%28cropped%29.jpg' },
+    { name: 'Lucero', img: 'https://www.opovo.com.br/_midias/jpg/2024/05/08/lucero_nacional_potosi_jogo_fortaleza_sul_americana_2024__2_-26855596.jpg' },
+    { name: 'Pedro Raul', img: 'https://www.opiniaoce.com.br/wp-content/uploads/2025/02/WhatsApp-Image-2025-02-25-at-16.30.36.jpeg' },
+    { name: 'Nenê', img: 'https://www.tupi.fm/wp-content/uploads/2023/10/F9sh3UOXsAA_XTM.jpg' },
+    { name: 'Marinho', img: 'https://conteudo.imguol.com.br/c/esporte/3a/2024/09/18/marinho-do-fortaleza-em-acao-no-jogo-contra-o-corinthians-pela-ida-das-quartas-da-sul-americana-1726659062687_v2_4x3.jpg' },
+    { name: 'Sérgio Oliveira', img: 'https://p2.trrsf.com/image/fget/cf/1200/1600/middle/images.terra.com/2025/02/18/1733694484-df5gf1tc.png' },
+    { name: 'Lucas Lima', img: 'https://sportrecife.com.br/wp-content/uploads/1990/07/Sport_@paulopaivafoto-3371-scaled.jpg' },
+    { name: 'Jhon Arias', img: 'https://www.netflu.com.br/wp-content/uploads/2023/05/jhon-arias-3.jpg' },
+    { name: 'Gustavo Scarpa', img: 'https://s2-ge.glbimg.com/X2ckjWbVAx-nd3SrBgkZetoat0E=/0x0:1080x1350/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2023/4/W/0unz1WRU6qOQjUlWeuRw/gczfaobwmaaivvn.jpg' },
+    { name: 'Dudu', img: 'https://zeiro.com.br/wp-content/uploads/2025/02/54307676909_0c268e881b_k-1024x683.jpg' },
+    { name: 'Gerson', img: 'https://tntsports.com.br/__export/1668295655290/sites/esporteinterativo/img/2022/11/12/gettyimages-1230111568.jpg_423682103.jpg' },
+    { name: 'Hyoran', img: 'https://medias.itatiaia.com.br/dims4/default/56b6a2c/2147483647/strip/false/crop/630x630+184+0/resize/1000x1000!/quality/90/?url=https%3A%2F%2Fk2-prod-radio-itatiaia.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fbe%2F59%2F3f50b2b84b98bb22d71896d8b599%2Fsport.jpeg' },
+    { name: 'Fábio', img: 'https://www.netflu.com.br/wp-content/uploads/2022/03/51928061127_37c9297856_k.jpg' },
+    { name: 'Juninho Capixaba', img: 'https://conteudo.imguol.com.br/c/esporte/9b/2022/12/08/juninho-capixaba-reforca-o-red-bull-bragantino-em-2023-1670511360879_v2_450x600.jpg' },
+    { name: 'Gabriel Taliari', img: 'https://s2-ge.glbimg.com/yfKj9_ontiOk6jTlt6m8uoCtcMk=/0x0:700x466/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/E/u/KJvoQhToi355O9O4VNSQ/taliari.jpg' },
+    { name: 'Lyanco', img: 'https://atletico.com.br/wp-content/uploads/2024/07/Lyanco-1.png' },
+    { name: 'Rony', img: 'https://conteudo.imguol.com.br/c/esporte/5d/2025/03/13/rony-comemora-apos-marcar-pelo-atletico-mg-no-jogo-de-ida-de-final-contra-o-america-1741897086711_v2_3x4.jpg' },
+  ];
+
+  const allNames = players.map(p => p.name);
+
+  let score = 0;
+  let currentQuestion = 0;
+  const totalQuestions = 11;
+
+  function getRandomPlayer() {
+    return players[Math.floor(Math.random() * players.length)];
+  }
+
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  function generateQuestion() {
+    document.getElementById('result').textContent = '';
+    
+    const correctPlayer = getRandomPlayer();
+    const img = document.getElementById('player-img');
+    img.src = correctPlayer.img;
+
+    let options = [correctPlayer.name];
+
+    while (options.length < 4) {
+      const randomName = allNames[Math.floor(Math.random() * allNames.length)];
+      if (!options.includes(randomName)) {
+        options.push(randomName);
+      }
+    }
+
+    options = shuffle(options);
+
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = '';
+
+    options.forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = name;
+      btn.onclick = () => {
+        if (name === correctPlayer.name) {
+          score++;
+          document.getElementById('result').textContent = 'Acertou!';
+          document.getElementById('result').style.color = 'green';
+        } else {
+          document.getElementById('result').textContent = `Errou! Era ${correctPlayer.name}`;
+          document.getElementById('result').style.color = 'red';
+        }
+
+        setTimeout(() => {
+          currentQuestion++;
+          if (currentQuestion < totalQuestions) {
+            generateQuestion();
+          } else {
+            showFinalScore();
+          }
+        }, 1000);
+      };
+      optionsDiv.appendChild(btn);
+    });
+  }
+
+ function showFinalScore() {
+  let message = '';
+  if (score <= 4) {
+    message = 'Xiii, pode melhorar hein!';
+  } else if (score <= 7) {
+    message = 'Você sabe um pouco, parabéns!';
+  } else {
+    message = 'Craque demais! Você manja muito!';
+  }
+
+  document.querySelector('.quiz-container').innerHTML = `
+    <h2>Fim do Quiz!</h2>
+    <p>Você acertou ${score} de ${totalQuestions} perguntas.</p>
+    <p>${message}</p>
+    <button onclick="location.reload()">Jogar novamente</button>
+  `;
+}
+
+
+  generateQuestion();
+</script>
+
+</body>
+</html>
